@@ -13,7 +13,7 @@
 #>
 
 # Module imports
-Import-Module -Name "$PSScriptRoot\Post-InstallMenuFunctions.psm1"
+#Import-Module -Name "$PSScriptRoot\Post-InstallMenuFunctions.psm1"
 Import-Module -Name "$PSScriptRoot\Post-InstallFunctions.psm1"
 
 # Powershell menu items
