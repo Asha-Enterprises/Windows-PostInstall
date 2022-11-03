@@ -12,7 +12,7 @@ function Rename-Workstation {
         $NewComputerName = $ComputerNameInfo[0]+'-'+$ComputerNameInfo[1]+'-'+$ComputerNameInfo[2]
     }
     PROCESS {
-        #Rename-Computer $NewComputerName -Force
+        Rename-Computer $NewComputerName -Force
     }
     END {
         return $NewComputerName

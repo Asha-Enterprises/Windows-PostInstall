@@ -21,7 +21,7 @@ function Format-MenuItem(
     [Parameter(Mandatory)][bool] $IsItemFocused) {
     $SelectionPrefix = '    '
     $FocusPrefix = '  '
-    $ItemText = ' ------------------------- '
+    $ItemText = ' -------------------------- '
     if ($(Test-MenuSeparator $MenuItem) -ne $true) {
         if ($MultiSelect) {
             $SelectionPrefix = if ($IsItemSelected) { '[x] ' } else { '[ ] ' }
@@ -184,7 +184,7 @@ function Install-AllPackages {
     Write-Host $Packages
     foreach ($pkg in $Packages) {
         Write-Host ('Installing {0}...' -f $pkg) -ForegroundColor Green
-        WinGet Install $pkg
+        WinGet Install $pkg -h
     }
 }
 Export-ModuleMember -Function Install-AllPackages
@@ -255,7 +255,7 @@ function Rename-Workstation {
         $NewComputerName = $ComputerNameInfo[0]+'-'+$ComputerNameInfo[1]+'-'+$ComputerNameInfo[2]
     }
     PROCESS {
-        #Rename-Computer $NewComputerName -Force
+        Rename-Computer $NewComputerName -Force
     }
     END {
         return $NewComputerName

@@ -6,7 +6,7 @@ function Install-AllPackages {
     Write-Host $Packages
     foreach ($pkg in $Packages) {
         Write-Host ('Installing {0}...' -f $pkg) -ForegroundColor Green
-        WinGet Install $pkg
+        WinGet Install $pkg -h
     }
 }
 Export-ModuleMember -Function Install-AllPackages
