@@ -21,7 +21,7 @@ function Format-MenuItem(
     [Parameter(Mandatory)][bool] $IsItemFocused) {
     $SelectionPrefix = '    '
     $FocusPrefix = '  '
-    $ItemText = ' -------------------------- '
+    $ItemText = ' ------------------------- '
     if ($(Test-MenuSeparator $MenuItem) -ne $true) {
         if ($MultiSelect) {
             $SelectionPrefix = if ($IsItemSelected) { '[x] ' } else { '[ ] ' }
@@ -40,6 +40,15 @@ function Format-MenuItemDefault($MenuItem) {
     return $MenuItem.ToString()
 }
 Export-ModuleMember -Function Format-MenuItem, Format-MenuItemDefault
+function Get-Acronym() {
+    param (
+        [Parameter(Mandatory)][String]$InputText
+    )
+    PROCESS {
+       $OutputText = (($InputText -split " " |ForEach-Object {$_[0]}) -join "")
+       return $OutputText
+    }
+}
 function Get-CalculatedPageIndexNumber(
     [Parameter(Mandatory, Position = 0)][Array] $MenuItems,
     [Parameter(Position = 1)][int]$MenuPosition,
@@ -137,7 +146,7 @@ function Get-WinGet () {
             else {
                 Write-Host "WinGet installer already exists."
             }
-            if ((Compare-FileHash) -eq 0) {
+            if ((Compare-FileHash $WinGetHashFile $WinGetInstallFile) -eq 0) {
                 Add-AppPackage -Path $WinGetInstallFile
             }
             else {
@@ -240,10 +249,10 @@ function Rename-Workstation {
     BEGIN {
         $ComputerNameInfo = @(
             $CName
-            (((Get-CimInstance Win32_BaseBoard).Manufacturer).Substring(0, 4)).ToUpper()
-            ( -join ((48..57) + (65..90) | Get-Random -Count 4 | ForEach-Object { [char]$_ }))
+            (((Get-CimInstance Win32_BaseBoard).Manufacturer).Substring(0,4)).ToUpper()
+            (-join ((48..57) + (65..90) | Get-Random -Count 4 | ForEach-Object {[char]$_}))
         )
-        $NewComputerName = $ComputerNameInfo[0] + '-' + $ComputerNameInfo[1] + '-' + $ComputerNameInfo[2]
+        $NewComputerName = $ComputerNameInfo[0]+'-'+$ComputerNameInfo[1]+'-'+$ComputerNameInfo[2]
     }
     PROCESS {
         #Rename-Computer $NewComputerName -Force
@@ -256,16 +265,15 @@ Export-ModuleMember -Function Rename-Workstation
 function Show-Banner { 
     Clear-Host
     $Host.UI.RawUI.ForegroundColor = 'Gray'
-    if ($nogui -like '-nogui') { 
+    if ($nogui -like '-nogui'){ 
         $null
-    }
-    else { 
+    }else { 
         Write-Host
         Write-Host " __      __.__            .___                  " -NoNewLine -ForegroundColor Magenta ; Write-Host "__________               __ " -NoNewLine  ; Write-Host " .___                 __         .__  .__   " -ForegroundColor Magenta
         Write-Host "/  \    /  \__| ____    __| _/______  _  _______" -NoNewLine -ForegroundColor Magenta ; Write-Host "\______   \____  _______/  |_" -NoNewLine  ; Write-Host "|   | ____   _______/  |______  |  | |  |  " -ForegroundColor Magenta
-        Write-Host "\   \/\/   /  |/    \  / __ |/  _ \ \/ \/ /  ___/" -NoNewLine -ForegroundColor Magenta ; Write-Host "|     ___/  _ \/  ___/\   __\" -NoNewLine ; Write-Host "   |/    \ /  ___/\   __\__  \ |  | |  |  " -ForegroundColor Magenta
-        Write-Host " \        /|  |   |  \/ /_/ (  <_> )     /\___ \ " -NoNewLine -ForegroundColor Magenta ; Write-Host "|    |  (  <_> )___ \  |  | " -NoNewLine ; Write-Host "|   |   |  \\___ \  |  |  / __ \|  |_|  |__" -ForegroundColor Magenta
-        Write-Host "  \__/\  / |__|___|  /\____ |\____/ \/\_//____  >" -NoNewLine -ForegroundColor Magenta ; Write-Host "|____|   \____/____  > |__| " -NoNewLine ; Write-Host "|___|___|  /____  > |__| (____  /____/____/" -ForegroundColor Magenta
+        Write-Host "\   \/\/   /  |/    \  / __ |/  _ \ \/ \/ /  ___/" -NoNewLine -ForegroundColor Magenta ;  Write-Host "|     ___/  _ \/  ___/\   __\" -NoNewLine ; Write-Host "   |/    \ /  ___/\   __\__  \ |  | |  |  " -ForegroundColor Magenta
+        Write-Host " \        /|  |   |  \/ /_/ (  <_> )     /\___ \ " -NoNewLine -ForegroundColor Magenta ;  Write-Host "|    |  (  <_> )___ \  |  | " -NoNewLine ; Write-Host "|   |   |  \\___ \  |  |  / __ \|  |_|  |__" -ForegroundColor Magenta
+        Write-Host "  \__/\  / |__|___|  /\____ |\____/ \/\_//____  >" -NoNewLine -ForegroundColor Magenta ;  Write-Host "|____|   \____/____  > |__| " -NoNewLine ; Write-Host "|___|___|  /____  > |__| (____  /____/____/" -ForegroundColor Magenta
         Write-Host "       \/          \/      \/                 \/  " -NoNewLine -ForegroundColor Magenta ; Write-Host "                  \/        " -NoNewLine  ; Write-Host "        \/     \/            \/           " -ForegroundColor Magenta
         Write-Host
         Write-Host "                        ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" -ForegroundColor Gray
@@ -364,20 +372,19 @@ function Show-Menu {
     }
 }
 Export-ModuleMember -Function Show-Menu
-function Test-CommandExists {
+function Test-CommandExists{
     param(
-        [Parameter(Position = 0, Mandatory = $true)]
+        [Parameter(Position=0, Mandatory=$true)]
         $cmdName
     )
-    try {
-        if (Get-Command $cmdName -errorAction SilentlyContinue) {
+    try{
+        if (Get-Command $cmdName -errorAction SilentlyContinue){
             return 1
         }
-        else {
+        else{
             return 0
         }
-    }
-    catch {
+    }catch{
         throw $_.Exception.Message
     }     
 }

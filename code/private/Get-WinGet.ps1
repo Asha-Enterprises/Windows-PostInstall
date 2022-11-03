@@ -17,7 +17,7 @@ function Get-WinGet () {
             else {
                 Write-Host "WinGet installer already exists."
             }
-            if ((Compare-FileHash) -eq 0) {
+            if ((Compare-FileHash $WinGetHashFile $WinGetInstallFile) -eq 0) {
                 Add-AppPackage -Path $WinGetInstallFile
             }
             else {

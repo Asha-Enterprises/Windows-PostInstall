@@ -87,8 +87,8 @@ do {
         $PackageSelection = Show-Menu -MenuItems $PackageOptions -MultiSelect
         #Install selected packages
         if ($null -ne $PackageSelection) {
-            #Install-AllPackages $PackageSelection
-            Write-Host $PackageSelection
+            Install-AllPackages ($PackageSelection).PackageID
+            #Write-Host $PackageSelection
         }
         $PackageSectionCounter++
     }
@@ -110,8 +110,8 @@ do {
     if ($RenameComputerQ -eq 'y') {
         $ComputerNameQ = $(Read-Host "Enter client name acronymized: ").ToUpper()
         if ($null -ne $ComputerNameQ) {
-            #Rename-Workstation $ComputerNameQ
-            Write-Host $ComputerNameQ
+            Rename-Workstation $ComputerNameQ
+            #Write-Host $ComputerNameQ
         }
         $RenameComputerSectionCounter++
         #Write-Host $RenameComputerSectionCounter
@@ -131,7 +131,7 @@ $RestartComputerSectionCounter = 0
 do {
     $RestartComputerQ = $(Read-Host "Would you like to restart the computer? [y/n] ")
     if ($RestartComputerQ -eq 'y') {
-        #Restart-Computer -Force
+        Restart-Computer -Force
         $RestartComputerSectionCounter++
         #Write-Host $RestartComputerSectionCounter
     }
