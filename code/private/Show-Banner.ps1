@@ -14,7 +14,7 @@ function Show-Banner {
         Write-Host
         Write-Host "                        ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" -ForegroundColor Gray
         Write-Host "                        ::" -NoNewLine -ForegroundColor Gray ; Write-Host "  Windows Post Installation Script" -NoNewLine -ForegroundColor Yellow ; Write-Host "  :: " -NoNewLine -ForegroundColor Gray ; Write-Host " Created by @mbussardcc" -NoNewLine -ForegroundColor Yellow ; Write-Host "    ::" -ForegroundColor Gray
-        Write-Host "                        ::" -NoNewLine -ForegroundColor Gray ; Write-Host "      https://github.com/Asha-Enterprises/powershell-scripts" -NoNewLine -ForegroundColor Yellow ; Write-Host "      ::" -ForegroundColor Gray
+        Write-Host "                        ::" -NoNewLine -ForegroundColor Gray ; Write-Host "      https://github.com/Asha-Enterprises/Windows-PostInstall" -NoNewLine -ForegroundColor Yellow ; Write-Host "     ::" -ForegroundColor Gray
         Write-Host "                        ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" -ForegroundColor Gray
     }
 }

@@ -8,12 +8,11 @@
     .NOTES
         Author: mbussardcc
     .LINK
-        https://github.com/Asha-Enterprises/powershell-scripts
+        https://github.com/Asha-Enterprises/Windows-PostInstall
     
 #>
 
 # Module imports
-#Import-Module -Name "$PSScriptRoot\Post-InstallMenuFunctions.psm1"
 Import-Module -Name "$PSScriptRoot\Post-InstallFunctions.psm1"
 
 # Powershell menu items
@@ -70,6 +69,12 @@ Import-Module -Name "$PSScriptRoot\Post-InstallFunctions.psm1"
     $(Named-MenuItem -DisplayName "Unigine Valley" -PackageID "Unigine.ValleyBenchmark")
 )
 
+[array]$ComputerTypes = @(
+    $(Named-MenuItem -DisplayName "Desktop" -PackageID "DSK")
+    $(Named-MenuItem -DisplayName "Laptop" -PackageID "LT")
+    $(Named-MenuItem -DisplayName "Server" -PackageID "SVR")
+)
+
 #Banner and welcome message
 Show-Banner
 Write-Host "Welcome to the post Windows installation script. Fasten your seat belts and prepare for take off."
@@ -80,68 +85,61 @@ Get-WinGet
 Start-Sleep -Seconds 2
 
 #Package selection section
-$PackageSectionCounter = 0
+[int]$PackageSectionCounter = 0
 do {
     $InstallPackagesQ = $(Read-Host "Would you like to install packages? [y/n]")
     if ($InstallPackagesQ -eq 'y') {
         $PackageSelection = Show-Menu -MenuItems $PackageOptions -MultiSelect
         #Install selected packages
-        if ($null -ne $PackageSelection) {
+        if ($PackageSelection -ne '') {
             Install-AllPackages ($PackageSelection).PackageID
-            #Write-Host $PackageSelection
         }
         $PackageSectionCounter++
     }
     elseif ($InstallPackagesQ -eq 'n') {
         $PackageSectionCounter++
-        #Write-Host $PackageSectionCounter
     }
     else {
         $PackageSectionCounter--
-        #Write-Host $PackageSectionCounter
     }
 }until (++$PackageSectionCounter -gt 0)
 
 
 #Rename computer section
-$RenameComputerSectionCounter = 0
+[int]$RenameComputerSectionCounter = 0
 do {
-    $RenameComputerQ = $(Read-Host "Would you like to rename computer? [y/n] ")
+    $RenameComputerQ = $(Read-Host "Would you like to rename computer? [y/n]")
     if ($RenameComputerQ -eq 'y') {
-        $ComputerNameQ = $(Read-Host "Enter client name acronymized: ").ToUpper()
-        if ($null -ne $ComputerNameQ) {
-            Rename-Workstation $ComputerNameQ
-            #Write-Host $ComputerNameQ
+        $ComputerNameQ = $(Read-Host "Enter client name acronymized").ToUpper()
+        if ($ComputerNameQ -ne '') {
+            $ComputerTypeQ = $(Show-Menu $ComputerTypes)
+            if ($ComputerTypeQ -ne '') {
+                Rename-Workstation $ComputerNameQ $ComputerTypeQ
+            }
         }
         $RenameComputerSectionCounter++
-        #Write-Host $RenameComputerSectionCounter
     }
     elseif ($RenameComputerQ -eq 'n') {
         $RenameComputerSectionCounter++
-        #Write-Host $RenameComputerSectionCounter
     }
     else {
         $RenameComputerSectionCounter--
-        #Write-Host $RenameComputerSectionCounter
     }
 }until (++$RenameComputerSectionCounter -gt 0)
 
 #Restart computer section
-$RestartComputerSectionCounter = 0
+[int]$RestartComputerSectionCounter = 0
 do {
     $RestartComputerQ = $(Read-Host "Would you like to restart the computer? [y/n] ")
     if ($RestartComputerQ -eq 'y') {
         Restart-Computer -Force
         $RestartComputerSectionCounter++
-        #Write-Host $RestartComputerSectionCounter
     }
 
     elseif ($RestartComputerQ -eq 'n') {
         $RestartComputerSectionCounter++
-        #Write-Host $RestartComputerSectionCounter
     }
     else {
         $RestartComputerSectionCounter--
-        #Write-Host $RestartComputerSectionCounter
     }
 }until (++$RestartComputerSectionCounter -gt 0)

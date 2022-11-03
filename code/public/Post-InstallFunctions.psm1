@@ -6,10 +6,10 @@ function Compare-FileHash {
     )
     PROCESS {
         if ((Get-Content -Path $FileWithHash) -eq (Get-FileHash).Hash) {
-            return 0
+            return $true
         }
         else {
-            return 1
+            return $false
         }
     }
 }
@@ -130,13 +130,13 @@ Export-ModuleMember -Function Get-PositionWithVKey
 function Get-WinGet () {
     BEGIN {
         $ProgressPreference = 'SilentlyContinue'
-        $WinGetInstallFile = "$PSScriptRoot\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
-        $WinGetInstallerURI = "https://github.com/microsoft/winget-cli/releases/latest/download/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
-        $WinGetHashURI = "https://github.com/microsoft/winget-cli/releases/latest/download/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.txt"
-        $WinGetHashFile = "$PSScriptRoot\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.txt"
+        [string]$WinGetInstallFile = "$PSScriptRoot\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+        [string]$WinGetInstallerURI = "https://github.com/microsoft/winget-cli/releases/latest/download/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+        [string]$WinGetHashURI = "https://github.com/microsoft/winget-cli/releases/latest/download/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.txt"
+        [string]$WinGetHashFile = "$PSScriptRoot\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.txt"
     }
     PROCESS {
-        if ((Test-CommandExists WinGet) -eq 0) {
+        if ((Test-CommandExists WinGet) -eq $false) {
             if (!(Test-Path -Path $WinGetInstallFile -PathType Leaf)) {
                 Write-Host "Downloading the latest WinGet installer..."
                 Invoke-WebRequest -Uri $WinGetInstallerURI -OutFile $WinGetInstallFile
@@ -146,7 +146,7 @@ function Get-WinGet () {
             else {
                 Write-Host "WinGet installer already exists."
             }
-            if ((Compare-FileHash $WinGetHashFile $WinGetInstallFile) -eq 0) {
+            if ((Compare-FileHash $WinGetHashFile $WinGetInstallFile) -eq $true) {
                 Add-AppPackage -Path $WinGetInstallFile
             }
             else {
@@ -244,15 +244,16 @@ Export-ModuleMember -Function Read-VKey
 function Rename-Workstation {
     param (
         [Parameter(Mandatory)]
-        [string[]]$CName
+        [string[]]$CName,
+        [string[]]$WType
     )
     BEGIN {
-        $ComputerNameInfo = @(
-            $CName
-            (((Get-CimInstance Win32_BaseBoard).Manufacturer).Substring(0,4)).ToUpper()
+        [array]$ComputerNameInfo = @(
+            [string]$CName
+            [string]$WType
             (-join ((48..57) + (65..90) | Get-Random -Count 4 | ForEach-Object {[char]$_}))
         )
-        $NewComputerName = $ComputerNameInfo[0]+'-'+$ComputerNameInfo[1]+'-'+$ComputerNameInfo[2]
+        $NewComputerName = $ComputerNameInfo -join "-"
     }
     PROCESS {
         Rename-Computer $NewComputerName -Force
@@ -278,7 +279,7 @@ function Show-Banner {
         Write-Host
         Write-Host "                        ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" -ForegroundColor Gray
         Write-Host "                        ::" -NoNewLine -ForegroundColor Gray ; Write-Host "  Windows Post Installation Script" -NoNewLine -ForegroundColor Yellow ; Write-Host "  :: " -NoNewLine -ForegroundColor Gray ; Write-Host " Created by @mbussardcc" -NoNewLine -ForegroundColor Yellow ; Write-Host "    ::" -ForegroundColor Gray
-        Write-Host "                        ::" -NoNewLine -ForegroundColor Gray ; Write-Host "      https://github.com/Asha-Enterprises/powershell-scripts" -NoNewLine -ForegroundColor Yellow ; Write-Host "      ::" -ForegroundColor Gray
+        Write-Host "                        ::" -NoNewLine -ForegroundColor Gray ; Write-Host "      https://github.com/Asha-Enterprises/Windows-PostInstall" -NoNewLine -ForegroundColor Yellow ; Write-Host "     ::" -ForegroundColor Gray
         Write-Host "                        ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" -ForegroundColor Gray
     }
 }
@@ -379,10 +380,10 @@ function Test-CommandExists{
     )
     try{
         if (Get-Command $cmdName -errorAction SilentlyContinue){
-            return 1
+            return $false
         }
         else{
-            return 0
+            return $true
         }
     }catch{
         throw $_.Exception.Message

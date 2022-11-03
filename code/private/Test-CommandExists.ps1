@@ -5,10 +5,10 @@
     )
     try{
         if (Get-Command $cmdName -errorAction SilentlyContinue){
-            return 1
+            return $false
         }
         else{
-            return 0
+            return $true
         }
     }catch{
         throw $_.Exception.Message

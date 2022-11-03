@@ -6,10 +6,10 @@ function Compare-FileHash {
     )
     PROCESS {
         if ((Get-Content -Path $FileWithHash) -eq (Get-FileHash).Hash) {
-            return 0
+            return $true
         }
         else {
-            return 1
+            return $false
         }
     }
 }

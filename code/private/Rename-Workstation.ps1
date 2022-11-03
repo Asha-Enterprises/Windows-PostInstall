@@ -1,15 +1,16 @@
 function Rename-Workstation {
     param (
         [Parameter(Mandatory)]
-        [string[]]$CName
+        [string[]]$CName,
+        [string[]]$WType
     )
     BEGIN {
-        $ComputerNameInfo = @(
-            $CName
-            (((Get-CimInstance Win32_BaseBoard).Manufacturer).Substring(0,4)).ToUpper()
+        [array]$ComputerNameInfo = @(
+            [string]$CName
+            [string]$WType
             (-join ((48..57) + (65..90) | Get-Random -Count 4 | ForEach-Object {[char]$_}))
         )
-        $NewComputerName = $ComputerNameInfo[0]+'-'+$ComputerNameInfo[1]+'-'+$ComputerNameInfo[2]
+        $NewComputerName = $ComputerNameInfo -join "-"
     }
     PROCESS {
         Rename-Computer $NewComputerName -Force
